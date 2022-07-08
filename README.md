@@ -1,30 +1,36 @@
 # HOW TO UPDATE DATABASE:
 
---> place pgn file in datasets
---> I use OpeningTree to pull my games, white and black
---> then I run cat roudiere-white.pgn roudiere-black.pgn > roudiere.pgn
---> run update_db.py :)
+- place pgn file in datasets
+- I use OpeningTree to pull my games, white and black
+- then I run cat roudiere-white.pgn roudiere-black.pgn > roudiere.pgn
+- run update_db.py :)
 
 # HOW TO INSTALL ENGINE:
 
---> run "brew install stockfish"
+- run `brew install stockfish`
 
 # HOW TO FIND ENGINE:
 
 make sure you are in CHESS_ANALYSIS, and run:
-cd /usr/local/opt/
+
+`cd /usr/local/opt/`
 
 # OPENINGS: DESCRIPTIVE INFORMATION
 
-how familiarity, sharpness, best are calculated:
-familiarity = games / (avg_cp_loss / game)
-sharpness = score / (avg_cp_loss / game)
-best = familiarity _ sharpness / ||(familiarity, sharpness)||
-= familiarity _ sharpness / (sqrt(familiarity**2 + sharpness**2))
+## how familiarity, sharpness, best are calculated
+
+`familiarity = games / (avg_cp_loss / game)`
+
+`sharpness = score / (avg_cp_loss / game)`
+
+`best = familiarity _ sharpness / ||(familiarity, sharpness)||`
+
+`= familiarity _ sharpness / (sqrt(familiarity**2 + sharpness**2))`
 
 # GAME HEURISTICS
 
 punish_rate: effectively when user's move deviated from best move less than the opponent's previous move
+
 smoothness = punish_rate / avg_cp_loss
 
 # CHESS ANALYSIS
@@ -37,4 +43,6 @@ The folders enclosed contain the following tools:
 --> datasets
 _ This is where some of the generated data can be found, including:
 --> mates
-_ A collection of forced mates from my games. \* Generated using calculate_forced_mates_in_n, found in chess_analysis.py
+_ A collection of forced mates from my games.
+
+Generated using calculate_forced_mates_in_n, found in chess_analysis.py
