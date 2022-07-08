@@ -1,0 +1,6 @@
+NOTES:
+    * C20 (e4 e5 other) is really low down -- my win rate is low, my average cp loss is quite high and I average 3 blunders a game.
+        --> This suggests that I am not prepared for punishing offbeat tries after e5.
+        --> I always play Nf3 after e5 which means it may help to review these games
+
+    * C02 (French advance) is really low down, especially for 18 games. Although C00

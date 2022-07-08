@@ -1,0 +1,255 @@
+DATE CREATED:
+8/16/2021
+
+GOAL:
+to implement the features of LiChess' Chess Insight tab locally on my chess games
+
+AIMS:
+-to practice efficient implementation of data analysis tools
+-to practice the things I'm currently learning about in computer science
+
+TIMEFRAME
+8/16/2021 2:47AM created folder datasets
+8/16/2021 3:00AM downloaded all live chess games from chess.com account roudiere
+	--> used opening tree to collect all files then export as pgn
+	--> result was two PGNs, roudiere-black.pgn and roudiere-white.pgn
+	--> need to combine these into one for a condensed data set (easier querying)
+8/16/2021 3:20AM merged roudiere-black.pgn and roudiere-white.pgn into one PGN, roudiere.pgn using merge_black_white_files.py
+8/16/2021 3:26AM merged roudiere-black.pgn and roudiere-white.pgn into one PGN, roudiere.pgn using zsh
+    --> zsh command: "cat * > roudiere.pgn"
+    --> learned using this reference: https://unix.stackexchange.com/questions/3770/how-to-merge-all-text-files-in-a-directory-into-one
+    --> demonstrates the importance of shell -- gives access to a whole host of tools that are not accessible by GUI because of cluttering
+8/16/2021 3:30AM moved merge_black_white_files.py to deprecated (for educational purposes)
+    --> demonstrates file pointers, basic python
+8/16/21 3:57AM began research on python-chess
+    --> https://readthedocs.org/projects/python-chess/downloads/pdf/latest/
+    --> data structures already provided, eval writing already provided (page 43)
+    --> skimming: useful for providing queries (page 47)
+    --> can communicate with UCI engines (e.g. Stockfish)
+8/17/21 1:40AM installed python-chess as dependency
+8/17/21 2:02AM created chess_analysis.py
+8/17/21 2:12AM created total_games() in chess_analysis.py
+8/17/21 2:16AM created color_games() in chess_analysis.py
+8/17/21 2:25AM renamed total_games() to build_game_list()
+8/17/21 2:25AM created get_total_games()
+8/17/21 2:28AM created determine_time_control_numbers()
+8/17/21 2:46AM installed stockfish 14 through homebrew
+    --> brew install stockfish
+8/17/21 3:03AM created iterate_through_moves()
+    --> calculates the score for each move using Stockfish
+        --> prints the score from player's POV
+    --> needed to find the folder that contained stockfish: "/usr/local/opt/stockfish/bin/stockfish"
+8/17/21 4:02PM began creating evaluations of all positions in database using python-chess and stockfish
+8/17/21 9:35PM finished evaluations -- seems accurate
+8/20/21 3:12AM created get_total_games_by_filter()
+    --> ended up finding two elements with no moves played -- removed from dataset
+    --> cleaned up evaluations.txt as well -- found two blank spots in file as well as two with one evaluation
+        --> guessing those are 1 move wins when I played white?
+8/20/21 3:37AM installed pandas, seaborn
+8/20/21 3:58AM basic data analysis
+    --> used get_total_games_by_filter() to find most played openings
+    --> used evaluation data from rligloo vs roudiere to create an advantage graph
+8/20/21 3:00PM basic data analysis
+    --> moved code from advantage graph to plot_evaluation_chart()
+    --> created basic_stats_from_eval()
+8/21/21 9:03AM data analysis
+    --> first attempt at answering the question, "how well do I play from each opening?"
+        --> calculated average (cp_loss, inaccuracies, mistakes, blunders) for every opening played
+        --> moved most played openings code to get_most_played_openings()
+        --> moved code to answer question to calc_all_openings_basic_acc()
+8/21/21 6:30PM created and filled database to hold all games
+8/21/21 7:47PM created get_all_forced_mates()
+    --> creates a text file with the FENs of all of the positions with forced mates
+8/21/21 8:02PM improved get_all_forced_mates()
+    --> takes optional input, till_mate, which only looks for positions with mate in N
+8/23/21 2:52AM answered the question, "What percentage of my games make it to the endgame?"
+    --> approximately 55%
+8/23/21 3:09AM answered the question, "What percentage of my games end in the opening?" (less than 12 moves)
+    --> approximately 8%
+8/23/21 3:29AM completed analysis of all stages of the game
+    opening ------ 7.67% end rate, 56.04% win rate
+    middlegame -- 37.40% end rate, 52.25% win rate
+    endgame ----- 54.93% end rate, 51.53% win rate
+    --> so it seems my opening is my strongest point, and I need to focus on endgames as most of my games finish there
+    --> another insight: I am a sharp player who aims for quick wins. The longer the game goes on, the better of a chance
+        my opponent has of winning (assuming equal strength)
+8/23/21 6:09PM created two measures of games from opening analysis:
+    --> comfortableness: games / (avg_cp_loss)**2
+        --> the more games I play, the more comfortable I am with the opening
+        --> the worse the cp_loss, the more likely I am to be unfamiliar with the positions
+    --> sharpness: win_percent / avg_cp_loss
+        --> measure of how efficient I am in winning
+8/24/21 4:18AM changed opening analysis to save opening ECO code instead of URL
+    --> should result in better grouping, since chess.com breaks openings up into more lines than I require
+8/24/21 4:19AM downloaded list of ECO codes from chessgames.com
+    --> URL: https://www.chessgames.com/chessecohelp.html
+8/24/21 4:22AM installed bs4 (BeautifulSoup)
+8/24/21 4:33AM created eco_codes.csv
+    --> CSV file which contains all ECO codes and their names
+    --> https://stackoverflow.com/questions/18966368/python-beautifulsoup-scrape-tables
+8/24/21 5:45AM replaced names of ECO code with ECO code -- name (line)
+    --> got hung up on bug for an hour: turns out the code I pasted in arbitrarily threw away the first two elements
+8/24/21 6:28AM cleaned up data analysis code, created folders for files
+    --> core: stuff such as the original PGN files, the merged file, the evaluation file
+    --> mates: data gathered/analysis on mates
+    --> openings: data gathered/analaysis on openings
+    --> scraping: data scraping tools
+8/24/21 2:22PM created spreadsheet from all_openings_descriptive_statsTimeControl_600.csv
+    --> used conditional formatting to better understand strengths and weaknesses of each opening
+    --> for example, I am very sharp at the Exchange French for Black (Jobava London prep), and generally good at the
+        French for both sides, but my Advance French is relatively weak -- with a win rate of 50% for black and a
+        2.08 average centipawn loss / game, my familiarity and sharpness are quite low relative to the number of games played
+8/24/21 3:20PM created get_stats_by_link()
+    --> input link, get back player names and corresponding stats in the game
+8/24/21 3:26PM fixed bug in calculating inaccuracies, mistakes, blunders
+    --> if a move was made that directly increased the player's advantage by a great amount,
+        it was misclassified as an inaccuracy/mistake/blunder
+            --> found when looking at 'https://www.chess.com/game/live/18051167449'
+            --> my last move was so winning it increased the advantage from -1400 to -7000
+            --> program misclassified as blunder because of diff increase
+    --> solution was to ignore these cases
+8/24/21 4:02PM improved function in calculating average diff
+    --> changed list comp to check if advantage increased after move, if so avg_diff = 0 (assuming best or close to best move)
+        --> added "if eval_lst[i + 1] {white/< || black/>} eval_lst[i] else 0"
+    --> checked best move calculation using "https://www.chess.com/game/live/18914145515"
+            --> best move calculation: 11/17 (64.71%) vs chess.com best move calculation (64.7%) :)
+    --> effect: overall avg_cp_loss decreased across all measures, need to recompile spreadsheet
+8/24/21 5:00PM recompiled spreadsheet from all_openings_descriptive_statsTimeControl_600.csv
+8/25/21 3:36PM created find_wins_with_smallest_cp_loss()
+    --> given move range and the option to find only games that end in mate, it returns my most accurate games
+8/25/21 4:21PM created helpers.py
+    --> to hold list building and keep analysis solely analysis
+8/25/21 5:17PM created df_game_to_pgn()
+    --> now a pgn file can be created from the database
+    --> pgn string is different from chess.com generation (they used the pattern n. w\tb )
+        --> possible fix later? but it still works fine the way I did it (n. w b )
+8/25/21 5:25PM created write_pgn_from_db()
+    --> writes entire database to PGN file
+8/25/21 5:40PM created DatabaseTools()
+    --> created get() for accessing database
+        --> can take multiple dynamically-generated inputs
+        (e.g. any combination of {["TimeControl", "600"] and ["White", "user"] and ["Result", "1-0"] and ["ECO", "C00"]})
+8/25/21 6:09PM moved get_total_games_by_filter.py to deprecated
+    --> rewrote get_most_played_openings to use database
+8/25/21 6:35PM moved engine evaluation code to engine_analysis.py
+8/25/21 improved get_test_game(), calc_all_openings_basic_stats()
+    --> added logic to handle forced mates in get_test_game()
+        --> previously mate was +/- 2000
+            --> however if game had eval of say +6000 then forced mate next move caused a drop in the eval
+        --> mate is now max/min(list of evaluations for side who has forced mate, 2000)
+        --> should make cp_loss more accurate
+        --> this caused advanced french to drop in sharpness, which seems reasonable
+    --> added logic for draws in calc_all_openings_basic_stats(), changed win_percent to score
+        --> made score more reasonable when compared to white/black win_percent and logical in calculating
+            sharpness and best
+8/25/21 2:55AM more data analysis
+    --> added best to opening analysis, changed comfortableness to familiarity
+        --> familiarity = sqrt(games)  / (avg_cp_loss/game)**2 instead of comfortableness = games / (avg_cp_loss/game)**2
+    best(opening) = familiarity * sharpness
+                  = (sqrt(games) * score) / (avg_cp_loss/game)**3
+    familiarity and sharpness are like vectors (features), and dotting them (applying [1, 1] vector to produce
+    a multidimensional scalar spatial mapping) provides a more nuanced view of the openings as well as provides a
+    function which factors in all core opening data to provide a nuanced perspective of my best (and worst) opening
+8/26/21 3:10AM more data analysis using improved database interaction
+    --> answered the question, "what is the average opponent elo in games I won/lost/drew playing as black
+    with the French defense in rapid (10|0) games?"
+        --> won: 1319, lost: 1356, drew: n/a
+    --> answered the question, "what is the average opponent elo in games I won playing as black
+    in the Reti in rapid (10|0) games?"
+        --> 1085
+    --> answered the question, "What is the average opponent elo in games I won playing as white in the Alapin in rapid (10|0) games?"
+        --> 1209
+8/26/21 4:10AM moved list cleaning code to clean_eval_list(n)
+    --> turns the nth evaluation list in chess_games.db from a string into a sequence of numbers
+    especially fitted to encode smoothness with respect to calculating centipawn loss
+        --> Runtime: O(n)
+8/26/21 4:28AM tweaked clean_eval_list()
+    --> min/max are now -/+1800 (18 points --> 2 queens) OR min/max position evaluation, used to be -/+2000 always (arbitrary)
+        --> anyone I play can beat me with 2 queens
+    --> spreadsheet avg_cp_loss is now much lower, as missed mates were less penalized
+        --> French, Scotch, and Alapin have risen in best function as a result
+8/26/21 5:47AM created calculate_elo()
+    --> simpler calculation of wins and losses (as white and black) using database to DataFrame
+    --> score seems to have been calculated more accurately
+    --> used this page for formula: https://en.wikipedia.org/wiki/Elo_rating_system
+8/26/21 8:36AM used calculus to show why best(opening) function works
+8/29/21 6:20AM made changes to heuristics
+    --> familiarity (f): sqrt(games) / avg_cp_loss/game
+    --> sharpness (s): score / avg_cp_loss/game
+    --> best: fs / sqrt(f^2 + s^2)
+8/31/21 4:15AM began analysis on luck/opportunistic for both sides
+    --> luck: the next move made had a bigger cp loss than the last
+    --> opportunistic: the next move made had a smaller cp loss than the last
+    --> tallied up event occurrences and created probabilities
+8/31/21 6:15AM created find_wins_by_heuristic(), moved find_wins_with_smallest_cp_loss() to deprecated
+    --> can now sort by three heuristics:
+        --> cp_loss
+        --> punish rate
+        --> smoothness: (1/cp_loss) * punish_rate
+    --> can invert using '-' operator
+8/31/21 9:51PM created spreadsheet from find_wins_by_heuristic(moves=(12, 25), f=[["TimeControl", "600"]], h='smoothness')
+9/10/21 5:00PM created get_castle_side(), get_user_castle_stats()
+    --> computed overall wins, losses, draws based on castling choice
+               wins  losses  draws     score
+    kingside    399     365     26  0.521519
+    queenside   124      75      7  0.618932
+    uncastled    96      93      2  0.507853
+
+    --> computed specifics of every castling permutation
+    me/them       wins  losses   draws   score
+    none|none      82      25      0  0.766355
+    none|O-O-O     17       6      0  0.739130
+    O-O-O|none     33      17      1  0.656863
+    none|O-O       40      21      0  0.655738
+    O-O-O|O-O      71      43      4  0.618644
+    O-O|none      111      69      7  0.612299
+    O-O-O|O-O-O    20      15      2  0.567568
+    O-O|O-O       241     240     17  0.501004
+    O-O|O-O-O      47      56      2  0.457143
+9/13/21 1:33AM gathered information on pawn play in each stage of the game
+    average opening loss: 43.68513093563726
+    average middle loss: 146.83091005762574
+    average end loss:    336.61411493053595
+9/14/21 7:39PM gathered information on trading queens before the endgame
+    wins: 118, losses: 71, draws: 14
+    score: 0.6157635467980296
+9/14/21 8:28PM gathered more information on trading queens before/after the endgame
+    When I trade queens before the endgame:
+    wins: 118, losses: 71, draws: 14
+    score: 0.6157635467980296
+    overall average cp_loss: 1.5299202130811773
+    ==============================================
+    When I don't trade queens before the endgame:
+    wins: 501, losses: 462, draws: 21
+    score: 0.5198170731707317
+    overall average cp_loss: 1.3182774193954532
+
+    --> when I trade queens before the endgame, my score goes up but my accuracy goes down
+    --> this suggests that I trade queens more often when I feel like I have a winning advantage
+1/06/22 6:30AM created map of score by country
+1/13/22 3:48AM changed get() function to accept dictionary of filters
+1/13/22 4:40AM created write_pgn_from_db()
+    --> creates PGN file from database
+1/13/22 7:27AM created heat map of square usage frequency from wins
+1/15/22 2:34AM added last_played column to show_descriptive_stats_by_opening
+    --> when inserting a column into a DataFrame, the indices must match
+    --> otherwise data will not transfer correctly
+    --> was stuck for 20 min getting "NaN" and "NaT" because I did not align the indices
+3/15/22 6:45AM visualized elo graph using mpl-finance
+    --> plotted elo for time controls as a candlestick graph (OHLC)
+3/15/22 7:15AM visualized score by time of day
+
+SOLVED: is game.headers a dictionary? yes
+
+TODO: add derived filters to database functionality
+
+TODO: do further analysis on all forced mates
+    found vs missed mates
+    make a game: have to determine if pos is m1,m2,m3,etc (timed)
+
+TODO: opening, middle, endgames:
+    for questions like:
+        where do a % of my mates / opp mates come from?
+TODO: opening heuristic: first n moves (n=8?, ply 16), endgame piece count (see reddit post)
+    calculate average opening mistakes for each opening
+TODO: rewrite functions to accept "White" and "white" --> .lower()

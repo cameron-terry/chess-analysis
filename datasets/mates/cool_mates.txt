@@ -1,0 +1,9 @@
+rnb1k1r1/bpp1qp2/p2p3p/1P2p3/P1B1P1P1/2PP4/5PPK/RNBQR3 b q - 0 15
+5rk1/1pp2ppp/2nb1n2/r2pP2b/3P4/1PN2P1q/P1P1QP1P/R1B2RK1 b - - 0 17
+r2q1rk1/1pp1b2p/p1n1R1p1/3p1N1Q/B2P4/2N5/PPP2PPP/R5K1 w - - 0 16
+r3r1k1/1p2bp2/nq1p2pQ/p1pP4/2P1B1b1/1P3N2/P4PPP/R1B1R1K1 w - - 2 19
+2bqk2r/1pp2ppp/8/1nbnp3/8/3K1PN1/1PPP2PP/3r1B1R w k - 0 14 (m4, weird king run eating pieces thing)
+r5k1/ppp2p1p/2p3BQ/6B1/1nbb4/8/P1KN1PPP/R3r3 w - - 0 22
+6k1/ppp2ppp/3p4/3P4/2Pn2K1/1PB3P1/P4PqP/R1Q5 b - - 2 29
+7k/pp1b1prp/4pQ2/2p1P3/1nPp3R/1P1P1K1P/P4P2/RN2q1r1 b - - 4 26
+3R4/pq2k3/4p1pp/1p6/1br3Q1/2B4P/2P2PP1/4R1K1 w - - 1 32
