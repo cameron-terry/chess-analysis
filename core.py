@@ -8,12 +8,15 @@ import chess.svg
 import database
 import pandas as pd
 import io
+from urllib.request import urlopen
+import json
+from datetime import date
 
 
 user = "roudiere"
 games_list = []  # save games_list locally for faster and easier accessing (at cost of memory)
 
-
+# acts as an intermediary between high-level code and database queries
 class DatabaseTool():
     def __init__(self):
         self.conn = database.conn
@@ -27,6 +30,7 @@ class DatabaseTool():
             dbt.get({"TimeControl": "600", "ECO": "C00", "Black": user, "Result": "0-1"})
                 will return all French defense rapid games where I played as black and won
         :param filters: a dictionary of all filters to apply
+        :param db: the database to search
         :return: DataFrame of games that match filter
         """
         if filters is not None:
@@ -102,19 +106,26 @@ class DatabaseTool():
         # https://datascience.stackexchange.com/questions/77033/creating-a-new-dataframe-with-specific-row-numbers-from-another
         return wins_df.iloc[indices, :]
 
+def get_games(user, year, month):
+    url = "https://api.chess.com/pub/player/{}/games/{}/{}".format(user, year, month)
+    response = urlopen(url)
+    data_json = json.loads(response.read())
+    return io.StringIO("\n\n".join([game['pgn'] for game in data_json['games']]))
+
 def build_game_list(add_new=False):
     if add_new:
-        updated_pgn = open("datasets/{}.pgn".format(user))
-        links = list(pd.read_sql_query("SELECT Link FROM games", DatabaseTool().conn).values[:, 0])
+        ignore = open("datasets/ignore.txt").readlines()
 
+        updated_pgn = get_games(user, date.today().strftime('%Y'), date.today().strftime('%m'))
+        links = list(pd.read_sql_query("SELECT Link FROM games", DatabaseTool().conn).values[:, 0])
         game = chess.pgn.read_game(updated_pgn)
         while game is not None:
-            if game.headers["Link"] not in links:
+            if game.headers["Link"] not in links and game.headers["Link"] not in ignore:
                 games_list.append(game)
 
             game = chess.pgn.read_game(updated_pgn)
 
-        print("(core) {} new games found".format(len(games_list)))
+        print("(core) {} new game(s) found".format(len(games_list)))
     else:
         pgn = [io.StringIO(g) for g in dbt.get()["PGN"].values]
         for game in pgn:

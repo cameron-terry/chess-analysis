@@ -44,8 +44,9 @@ def build_db(games_lst, evals):
         except sqlite3.IntegrityError:
             continue
         except KeyError:
-            print("[!] Game was probably abandoned early and has no ECO: ", game.headers["Link"])
-            print("[!] Please remove this game from the dataset and rerun any code that calls this function.")
+            # if here, there is no eco, meaning the game was probably abandoned early
+            # i could just insert eco code 000, but not sure
+            print("[!] Please add {} to datasets/ignore.txt and rerun any scripts that call this function.".format(game.headers["Link"]))
         except IndexError:
             continue
 
